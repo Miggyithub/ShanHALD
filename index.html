@@ -147,17 +147,9 @@
   <div class="wrap about-grid">
     <div>
       <div class="about-photo img-reveal">
-        <!--
-          HOW TO ADD/SWAP SLIDES:
-          Put your images/video in an "assets/about/" folder next to this HTML file, then
-          duplicate a <div class="slide"> block below (images: <img src="...">, video: <video src="...">).
-        -->
+        <!-- Slideshow auto-scans assets/about/ on refresh (via list.php). Just drop a file in that folder — nothing to edit here. -->
         <div class="photo-slider" id="aboutSlider">
-          <div class="slider-track" id="sliderTrack">
-            <div class="slide"><img src="assets/about/ALDAMA_PICT.jpg" alt="Shan Hanzon A. Aldama, arms crossed, plaid shirt"></div>
-            <div class="slide"><img src="assets/about/ALDAMA_PIC.jpg" alt="Shan Hanzon A. Aldama at his college graduation"></div>
-            <div class="slide"><video src="assets/about/Aldama.mp4" muted loop playsinline controls></video></div>
-          </div>
+          <div class="slider-track" id="sliderTrack"></div>
           <button type="button" class="slider-arrow slider-prev" id="sliderPrev" aria-label="Previous photo">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -298,7 +290,7 @@
         </span>
       </div>
     </div>
-
+    <p class="credential-note">Cards link to files in an "assets/credentials/" folder — add your scanned diploma and certificates there (see the comment in the HTML for exact steps) and they'll appear here automatically.</p>
   </div>
 </section>
 
@@ -423,6 +415,7 @@
   </div>
 </div>
 
+<script src="assets/about/slides-manifest.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

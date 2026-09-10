@@ -116,7 +116,7 @@ form.addEventListener('submit', (e) => {
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ===== About slideshow (photos + video, next/prev, dots, swipe) =====
+// ===== About slideshow (auto-scans assets/about/ via list.php; falls back to slides-manifest.js) =====
 (function initAboutSlider(){
   const track = document.getElementById('sliderTrack');
   const prevBtn = document.getElementById('sliderPrev');
@@ -124,41 +124,83 @@ document.getElementById('year').textContent = new Date().getFullYear();
   const dotsWrap = document.getElementById('sliderDots');
   if (!track) return;
 
-  const slides = [...track.children];
-  let index = 0;
+  const videoExt = /\.(mp4|webm|mov)$/i;
 
-  slides.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.className = 'slider-dot' + (i === 0 ? ' is-active' : '');
-    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-    dot.addEventListener('click', () => goTo(i));
-    dotsWrap.appendChild(dot);
-  });
-  const dots = [...dotsWrap.children];
-
-  function pauseVideos(){
-    slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
+  function buildSlide(filename, alt){
+    const slide = document.createElement('div');
+    slide.className = 'slide';
+    const src = 'assets/about/' + encodeURIComponent(filename);
+    if (videoExt.test(filename)) {
+      const video = document.createElement('video');
+      video.src = src;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.controls = true;
+      slide.appendChild(video);
+    } else {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt || '';
+      img.loading = 'lazy';
+      slide.appendChild(img);
+    }
+    return slide;
   }
-  function goTo(i){
-    pauseVideos();
-    index = (i + slides.length) % slides.length;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
+
+  function setup(items){
+    items.forEach(item => track.appendChild(buildSlide(item.file, item.alt)));
+    const slides = [...track.children];
+    if (!slides.length) return;
+    let index = 0;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'slider-dot' + (i === 0 ? ' is-active' : '');
+      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+    const dots = [...dotsWrap.children];
+
+    function pauseVideos(){
+      slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
+    }
+    function goTo(i){
+      pauseVideos();
+      index = (i + slides.length) % slides.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
+    }
+
+    prevBtn.addEventListener('click', () => goTo(index - 1));
+    nextBtn.addEventListener('click', () => goTo(index + 1));
+
+    let startX = null;
+    track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', (e) => {
+      if (startX === null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) goTo(dx > 0 ? index - 1 : index + 1);
+      startX = null;
+    });
   }
 
-  prevBtn.addEventListener('click', () => goTo(index - 1));
-  nextBtn.addEventListener('click', () => goTo(index + 1));
-
-  // Swipe support on touch devices
-  let startX = null;
-  track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-  track.addEventListener('touchend', (e) => {
-    if (startX === null) return;
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) goTo(dx > 0 ? index - 1 : index + 1);
-    startX = null;
-  });
+  // Preferred path: assets/about/list.php scans the folder server-side (works on
+  // XAMPP/Apache) so any file dropped in that folder shows up on refresh — nothing to edit.
+  // Fallback: if PHP isn't available (e.g. static hosting, or opening the file directly),
+  // use the hand-written list in assets/about/slides-manifest.js instead.
+  fetch('assets/about/list.php', { cache: 'no-store' })
+    .then(res => { if (!res.ok) throw new Error('list.php not available'); return res.json(); })
+    .then(files => {
+      if (!Array.isArray(files) || !files.length) throw new Error('folder scan came back empty');
+      setup(files.map(f => ({ file: f, alt: 'Shan Hanzon A. Aldama' })));
+    })
+    .catch(() => {
+      const manifest = Array.isArray(window.ABOUT_SLIDES) ? window.ABOUT_SLIDES : [];
+      setup(manifest);
+    });
 })();
 
 // ===== Credentials lightbox (Certificates & Diploma viewer) =====
