@@ -59,7 +59,7 @@ document.querySelectorAll('.split-text').forEach(el => {
 // 2) One observer drives every reveal type: plain fade/rise, word-stagger,
 //    image curtain-unveil, and card grids. Each element animates once,
 //    the moment it enters the viewport, then stops being watched.
-const revealSelectors = '.reveal, .split-text, .img-reveal, .skill-card, .project-card, .award-card';
+const revealSelectors = '.reveal, .split-text, .img-reveal, .skill-card, .project-card, .award-card, .credential-card';
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -115,6 +115,88 @@ form.addEventListener('submit', (e) => {
 });
 
 document.getElementById('year').textContent = new Date().getFullYear();
+
+// ===== About slideshow (photos + video, next/prev, dots, swipe) =====
+(function initAboutSlider(){
+  const track = document.getElementById('sliderTrack');
+  const prevBtn = document.getElementById('sliderPrev');
+  const nextBtn = document.getElementById('sliderNext');
+  const dotsWrap = document.getElementById('sliderDots');
+  if (!track) return;
+
+  const slides = [...track.children];
+  let index = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'slider-dot' + (i === 0 ? ' is-active' : '');
+    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+  const dots = [...dotsWrap.children];
+
+  function pauseVideos(){
+    slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
+  }
+  function goTo(i){
+    pauseVideos();
+    index = (i + slides.length) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
+  }
+
+  prevBtn.addEventListener('click', () => goTo(index - 1));
+  nextBtn.addEventListener('click', () => goTo(index + 1));
+
+  // Swipe support on touch devices
+  let startX = null;
+  track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) goTo(dx > 0 ? index - 1 : index + 1);
+    startX = null;
+  });
+})();
+
+// ===== Credentials lightbox (Certificates & Diploma viewer) =====
+const lightbox = document.getElementById('lightbox');
+if (lightbox) {
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  function openCredential(card){
+    const full = card.getAttribute('data-full');
+    if (!full) return;
+    if (/\.pdf($|\?)/i.test(full)) {
+      window.open(full, '_blank', 'noopener');
+      return;
+    }
+    lightboxImg.src = full;
+    lightboxImg.alt = card.querySelector('h3') ? card.querySelector('h3').textContent : 'Credential';
+    lightbox.classList.add('is-open');
+  }
+
+  document.querySelectorAll('.credential-card[data-full]').forEach(card => {
+    card.addEventListener('click', () => openCredential(card));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openCredential(card);
+      }
+    });
+  });
+
+  function closeLightbox(){
+    lightbox.classList.remove('is-open');
+    lightboxImg.src = '';
+  }
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+}
 
 // ===== Bottom nav (mobile app-style shortcut bar) =====
 const bottomNav = document.getElementById('bottomNav');

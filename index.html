@@ -22,6 +22,7 @@
       <a href="#home" class="active">Home</a>
       <a href="#about">About</a>
       <a href="#skills">Skills</a>
+      <a href="#credentials">Credentials</a>
       <a href="#projects">Projects</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -60,6 +61,7 @@
     <a href="#home">Home</a>
     <a href="#about">About</a>
     <a href="#skills">Skills</a>
+    <a href="#credentials">Credentials</a>
     <a href="#projects">Projects</a>
     <a href="#contact">Contact</a>
   </div>
@@ -88,10 +90,9 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.6"/></svg>
         </a>
       </div>
-      <!-- Replace the href="#" below with your real profile URLs -->
       <div class="profile-pills reveal">
-        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="#" target="_blank" rel="noopener">Upwork</a>
+        <a href="https://www.linkedin.com/in/aldama-shan-hanzon-a-93556b353/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://www.upwork.com/freelancers/~01e89716cfa4b954b4?mp_source=share" target="_blank" rel="noopener">Upwork</a>
         <a href="#" target="_blank" rel="noopener">Indeed</a>
       </div>
     </div>
@@ -146,7 +147,25 @@
   <div class="wrap about-grid">
     <div>
       <div class="about-photo img-reveal">
-        <img src="assets/profile.jpg" alt="Shan Hanzon A. Aldama">
+        <!--
+          HOW TO ADD/SWAP SLIDES:
+          Put your images/video in an "assets/about/" folder next to this HTML file, then
+          duplicate a <div class="slide"> block below (images: <img src="...">, video: <video src="...">).
+        -->
+        <div class="photo-slider" id="aboutSlider">
+          <div class="slider-track" id="sliderTrack">
+            <div class="slide"><img src="assets/about/ALDAMA_PICT.jpg" alt="Shan Hanzon A. Aldama, arms crossed, plaid shirt"></div>
+            <div class="slide"><img src="assets/about/ALDAMA_PIC.jpg" alt="Shan Hanzon A. Aldama at his college graduation"></div>
+            <div class="slide"><video src="assets/about/Aldama.mp4" muted loop playsinline controls></video></div>
+          </div>
+          <button type="button" class="slider-arrow slider-prev" id="sliderPrev" aria-label="Previous photo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="slider-arrow slider-next" id="sliderNext" aria-label="Next photo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="slider-dots" id="sliderDots"></div>
+        </div>
       </div>
       <div class="stats-row">
         <div class="stat reveal"><div class="stat-num">500+</div><div class="stat-label">OJT hours completed</div></div>
@@ -210,6 +229,79 @@
   </div>
 </section>
 
+<section id="credentials">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker reveal">Proof of work</p>
+      <h2 class="split-text">Credentials</h2>
+      <p class="sub reveal">My diploma and certifications — click any card to view it full-size.</p>
+    </div>
+
+    <!--
+      HOW TO ADD YOUR OWN FILES:
+      1. Put your scanned diploma/certificate images (or PDFs) in an "assets/credentials/" folder next to this HTML file.
+      2. For each card below, set data-full="assets/credentials/your-file.jpg" (or .pdf).
+         Images open in the lightbox on click; PDFs open in a new tab automatically.
+      3. Update the <h3> title and <p> description text to match the credential.
+      4. Duplicate a <div class="credential-card reveal" ...> block to add more cards.
+    -->
+    <div class="credentials-grid">
+      <div class="credential-card reveal" data-full="assets/credentials/diploma.jpg" tabindex="0" role="button" aria-label="View Diploma">
+        <div class="credential-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 2 8l10 5 10-5-10-5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="credential-body">
+          <h3>Diploma</h3>
+          <p>BS Information Technology — World Citi Colleges</p>
+        </div>
+        <span class="credential-view">View
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+
+      <div class="credential-card reveal" data-full="assets/credentials/certificate-1.jpg" tabindex="0" role="button" aria-label="View certificate">
+        <div class="credential-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 16.5 10.5 20 12 17.5l1.5 2.5 1.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="credential-body">
+          <h3>Certificate title</h3>
+          <p>Issuing organization — year</p>
+        </div>
+        <span class="credential-view">View
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+
+      <div class="credential-card reveal" data-full="assets/credentials/certificate-2.jpg" tabindex="0" role="button" aria-label="View certificate">
+        <div class="credential-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 16.5 10.5 20 12 17.5l1.5 2.5 1.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="credential-body">
+          <h3>Certificate title</h3>
+          <p>Issuing organization — year</p>
+        </div>
+        <span class="credential-view">View
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+
+      <div class="credential-card reveal" data-full="assets/credentials/certificate-3.jpg" tabindex="0" role="button" aria-label="View certificate">
+        <div class="credential-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 16.5 10.5 20 12 17.5l1.5 2.5 1.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="credential-body">
+          <h3>Certificate title</h3>
+          <p>Issuing organization — year</p>
+        </div>
+        <span class="credential-view">View
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </div>
+    <p class="credential-note">Cards link to files in an "assets/credentials/" folder — add your scanned diploma and certificates there (see the comment in the HTML for exact steps) and they'll appear here automatically.</p>
+  </div>
+</section>
+
 <section id="projects">
   <div class="wrap">
     <div class="section-head">
@@ -225,6 +317,10 @@
           <p><strong>Project Lead</strong> · Aug – Dec 2025</p>
           <p>Led a 6-member team through the full lifecycle — planning, development, and deployment — of a secure document archive with an integrated peer-to-peer messaging system. Architected the platform's security layer using TLS and HMAC-SHA256 encryption, designed the UI/UX in Figma and Canva, and deployed the live application on Hostinger.</p>
           <div class="tags"><span class="tag">TLS / HMAC-SHA256</span><span class="tag">JavaScript</span><span class="tag">Figma</span><span class="tag">Hostinger</span></div>
+          <!-- Replace href="#" with the live Docshield URL once you have one -->
+          <a href="#" target="_blank" rel="noopener" class="project-link">View project
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
         </div>
       </div>
       <div class="project-card reveal">
@@ -317,6 +413,15 @@
     <span class="bn-label">Contact</span>
   </a>
 </nav>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-inner">
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
