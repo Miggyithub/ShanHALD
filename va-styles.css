@@ -149,3 +149,32 @@ html[data-theme="light"] .timeline-preview{background:linear-gradient(135deg,#2a
   .showcase{grid-template-columns:1fr;gap:28px;margin-bottom:52px;}
   .showcase-reverse .showcase-copy, .showcase-reverse .showcase-visual{order:0;}
 }
+
+/* ===== Bottom mobile nav (VA page only) =====
+   Icon/label sizing lives outside the media query on purpose: the SVGs
+   already carry width/height attributes as a first line of defense, and
+   these rules are a second one — so a stale cache or partial deploy can't
+   leave the raw, unsized SVGs rendering at browser-default (huge) size. */
+.bottom-nav{display:none;}
+.bottom-nav-link{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 10px;border-radius:12px;color:var(--muted);
+  transition:color .2s ease, background .2s ease;
+}
+.bottom-nav-link .bn-icon{display:flex;}
+.bottom-nav-link .bn-icon svg{width:20px;height:20px;display:block;}
+.bottom-nav-link .bn-label{font-size:.66rem;font-weight:600;}
+.bottom-nav-link:hover{color:var(--text);}
+.bottom-nav-link.active{color:var(--accent);background:var(--accent-soft);}
+
+@media (max-width:900px){
+  body{padding-bottom:72px;}
+  .bottom-nav{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;
+    background:color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    justify-content:space-around;
+  }
+}

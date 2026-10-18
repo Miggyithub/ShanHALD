@@ -29,14 +29,18 @@ mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () =>
 }));
 
 // ===== Scrollspy (highlight active nav link) =====
-const navLinks = document.querySelectorAll('#navLinks a');
+// Drives both the top nav and the mobile bottom nav (VA page), when present.
+const navLinks = document.querySelectorAll('#navLinks a, .bottom-nav-link');
 const sections = [...document.querySelectorAll('section[id]')];
 const spy = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       navLinks.forEach(l => l.classList.remove('active'));
-      const active = document.querySelector(`#navLinks a[href="#${entry.target.id}"]`);
-      if (active) active.classList.add('active');
+      document.querySelectorAll(`a[href="#${entry.target.id}"]`).forEach(a => {
+        if (a.closest('#navLinks') || a.classList.contains('bottom-nav-link')) {
+          a.classList.add('active');
+        }
+      });
     }
   });
 }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
@@ -59,7 +63,7 @@ document.querySelectorAll('.split-text').forEach(el => {
 // 2) One observer drives every reveal type: plain fade/rise, word-stagger,
 //    image curtain-unveil, and card grids. Each element animates once,
 //    the moment it enters the viewport, then stops being watched.
-const revealSelectors = '.reveal, .split-text, .img-reveal, .skill-card, .project-card, .award-card, .credential-card';
+const revealSelectors = '.reveal, .split-text, .img-reveal, .skill-card, .project-card, .award-card';
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -115,168 +119,6 @@ form.addEventListener('submit', (e) => {
 });
 
 document.getElementById('year').textContent = new Date().getFullYear();
-
-// ===== About slideshow (auto-scans assets/about/ via list.php; falls back to slides-manifest.js) =====
-(function initAboutSlider(){
-  const track = document.getElementById('sliderTrack');
-  const prevBtn = document.getElementById('sliderPrev');
-  const nextBtn = document.getElementById('sliderNext');
-  const dotsWrap = document.getElementById('sliderDots');
-  if (!track) return;
-
-  const videoExt = /\.(mp4|webm|mov)$/i;
-
-  function buildSlide(filename, alt){
-    const slide = document.createElement('div');
-    slide.className = 'slide';
-    const src = 'assets/about/' + encodeURIComponent(filename);
-    if (videoExt.test(filename)) {
-      const video = document.createElement('video');
-      video.src = src;
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.controls = true;
-      slide.appendChild(video);
-    } else {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = alt || '';
-      img.loading = 'lazy';
-      slide.appendChild(img);
-    }
-    return slide;
-  }
-
-  function setup(items){
-    items.forEach(item => track.appendChild(buildSlide(item.file, item.alt)));
-    const slides = [...track.children];
-    if (!slides.length) return;
-    let index = 0;
-
-    slides.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.type = 'button';
-      dot.className = 'slider-dot' + (i === 0 ? ' is-active' : '');
-      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-      dot.addEventListener('click', () => goTo(i));
-      dotsWrap.appendChild(dot);
-    });
-    const dots = [...dotsWrap.children];
-
-    function pauseVideos(){
-      slides.forEach(s => { const v = s.querySelector('video'); if (v) v.pause(); });
-    }
-    function goTo(i){
-      pauseVideos();
-      index = (i + slides.length) % slides.length;
-      track.style.transform = `translateX(-${index * 100}%)`;
-      dots.forEach((d, di) => d.classList.toggle('is-active', di === index));
-    }
-
-    prevBtn.addEventListener('click', () => goTo(index - 1));
-    nextBtn.addEventListener('click', () => goTo(index + 1));
-
-    let startX = null;
-    track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-    track.addEventListener('touchend', (e) => {
-      if (startX === null) return;
-      const dx = e.changedTouches[0].clientX - startX;
-      if (Math.abs(dx) > 40) goTo(dx > 0 ? index - 1 : index + 1);
-      startX = null;
-    });
-  }
-
-  // Preferred path: assets/about/list.php scans the folder server-side (works on
-  // XAMPP/Apache) so any file dropped in that folder shows up on refresh — nothing to edit.
-  // Fallback: if PHP isn't available (e.g. static hosting, or opening the file directly),
-  // use the hand-written list in assets/about/slides-manifest.js instead.
-  fetch('assets/about/list.php', { cache: 'no-store' })
-    .then(res => { if (!res.ok) throw new Error('list.php not available'); return res.json(); })
-    .then(files => {
-      if (!Array.isArray(files) || !files.length) throw new Error('folder scan came back empty');
-      setup(files.map(f => ({ file: f, alt: 'Shan Hanzon A. Aldama' })));
-    })
-    .catch(() => {
-      const manifest = Array.isArray(window.ABOUT_SLIDES) ? window.ABOUT_SLIDES : [];
-      setup(manifest);
-    });
-})();
-
-// ===== Credentials lightbox (Certificates & Diploma viewer) =====
-const lightbox = document.getElementById('lightbox');
-if (lightbox) {
-  const lightboxImg = document.getElementById('lightboxImg');
-  const lightboxClose = document.getElementById('lightboxClose');
-
-  function openCredential(card){
-    const full = card.getAttribute('data-full');
-    if (!full) return;
-    if (/\.pdf($|\?)/i.test(full)) {
-      window.open(full, '_blank', 'noopener');
-      return;
-    }
-    lightboxImg.src = full;
-    lightboxImg.alt = card.querySelector('h3') ? card.querySelector('h3').textContent : 'Credential';
-    lightbox.classList.add('is-open');
-  }
-
-  document.querySelectorAll('.credential-card[data-full]').forEach(card => {
-    card.addEventListener('click', () => openCredential(card));
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openCredential(card);
-      }
-    });
-  });
-
-  function closeLightbox(){
-    lightbox.classList.remove('is-open');
-    lightboxImg.src = '';
-  }
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
-}
-
-// ===== Bottom nav (mobile app-style shortcut bar) =====
-const bottomNav = document.getElementById('bottomNav');
-if (bottomNav) {
-  const bottomLinks = [...bottomNav.querySelectorAll('.bottom-nav-link')];
-
-  // Reuses the same `sections` list gathered above for the top scrollspy
-  const bottomSpy = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const match = bottomNav.querySelector(`.bottom-nav-link[href="#${entry.target.id}"]`);
-        if (match) {
-          bottomLinks.forEach(l => l.classList.remove('active'));
-          match.classList.add('active');
-        }
-      }
-    });
-  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-  sections.forEach(s => bottomSpy.observe(s));
-
-  // Hide the bar while scrolling down, bring it back on scroll up
-  let lastY = window.scrollY;
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    if (Math.abs(y - lastY) > 6) {
-      bottomNav.classList.toggle('is-hidden', y > lastY && y > 120);
-      lastY = y;
-    }
-  }, { passive: true });
-
-  // Keep it out of the way while the full mobile menu is open
-  hamburger.addEventListener('click', () => {
-    bottomNav.classList.toggle('is-hidden', mobilePanel.classList.contains('open'));
-  });
-  mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    bottomNav.classList.remove('is-hidden');
-  }));
-}
 
 // ===== Hero network canvas background =====
 const canvas = document.getElementById('net');
@@ -336,3 +178,48 @@ window.addEventListener('resize', () => {
   if (reduceMotion) draw();
 });
 start();
+
+// ===== Certificates lightbox =====
+(function initCertLightbox(){
+  const lightbox = document.getElementById('certLightbox');
+  const backdrop = document.getElementById('certLightboxBackdrop');
+  const closeBtn = document.getElementById('certLightboxClose');
+  const imgEl = document.getElementById('certLightboxImg');
+  const titleEl = document.getElementById('certLightboxTitle');
+  const subEl = document.getElementById('certLightboxSub');
+  const cards = document.querySelectorAll('.cert-card');
+  if (!lightbox || !cards.length) return;
+
+  let lastFocused = null;
+
+  function openLightbox(card){
+    lastFocused = document.activeElement;
+    imgEl.src = card.dataset.full;
+    imgEl.alt = card.dataset.title || '';
+    titleEl.textContent = card.dataset.title || '';
+    subEl.textContent = card.dataset.sub || '';
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => lightbox.classList.add('is-open'));
+    closeBtn.focus();
+  }
+
+  function closeLightbox(){
+    lightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      lightbox.hidden = true;
+      imgEl.src = '';
+    }, 300);
+    if (lastFocused) lastFocused.focus();
+  }
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => openLightbox(card));
+  });
+  closeBtn.addEventListener('click', closeLightbox);
+  backdrop.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+  });
+})();
