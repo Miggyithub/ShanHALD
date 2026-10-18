@@ -16,3 +16,4 @@ window.ABOUT_SLIDES = [
   { file: "IMGM6666.jpg", alt: "Shan Hanzon A. Aldama" },
   { file: "Aldama.mp4", alt: "Short video of Shan Hanzon A. Aldama" }
 ];
+
